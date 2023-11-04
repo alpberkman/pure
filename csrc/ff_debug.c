@@ -10,7 +10,7 @@ extern cell lp;
 
 void disasm(VM *vm, cell addr, cell begin, cell end) {
     while(begin < end) {
-        switch(*((cell *) &(vm->ram[begin]))){
+        switch(0xffff & *((cell *) &(vm->ram[begin]))){
             case NOP: printf("NOP"); break;
             case LIT:
                 printf("LIT");
@@ -65,8 +65,23 @@ void disasm(VM *vm, cell addr, cell begin, cell end) {
                 cell f = addr;
                 while(*((cell *) &(vm->ram[begin])) < f)
                     f = *((cell *) &(vm->ram[f]));
-                printf("%.*s (%04x)", (vm->ram[f + CELL_SIZE] & WORD_LEN), (char *) &(vm->ram[f + CELL_SIZE + 1]), *((cell *) &(vm->ram[begin])));
+                printf("%.*s (%04x)", (vm->ram[f + CELL_SIZE] & WORD_LEN), (char *) &(vm->ram[f + CELL_SIZE + 1]), 0xffff & *((cell *) &(vm->ram[begin])));
             }
+            /*
+             {
+                cell f = addr;
+                while(f != 0) {
+                    if(*((cell *) &(vm->ram[begin])) == *((cell *) &(vm->ram[f + CELL_SIZE + 1 + (vm->ram[f + CELL_SIZE] & WORD_LEN)]))) {
+                        printf("%.*s (%04x)", (vm->ram[f + CELL_SIZE] & WORD_LEN), (char *) &(vm->ram[f + CELL_SIZE + 1]), 0xffff & *((cell *) &(vm->ram[begin])));
+                        break;
+                    }
+                    f = *((cell *) &(vm->ram[f]));
+                }
+                if(f == 0)
+                    printf("%5i (%04x)", *((cell *) &(vm->ram[begin])), *((cell *) &(vm->ram[begin])));
+
+            }
+             */
         }
         printf("\n");
 
@@ -93,7 +108,7 @@ void list1(VM *vm) {
             end - addr - CELL_SIZE - 1 - (flags & WORD_LEN)
         );
         for(int i = 0; i < (end - addr - CELL_SIZE - 1 - (flags & WORD_LEN))/CELL_SIZE; ++i)
-            printf("%04x ", *((cell *) &(vm->ram[addr + CELL_SIZE + 1 + (flags & WORD_LEN) + i*CELL_SIZE])));
+            printf("%04x ", 0xffff & *((cell *) &(vm->ram[addr + CELL_SIZE + 1 + (flags & WORD_LEN) + i*CELL_SIZE])));
         puts("");
     }
     puts("\n\n");

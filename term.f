@@ -1,0 +1,29 @@
+
+: .  dup 10 / [char] 0 + emit 10 % [char] 0 + emit ;
+
+
+: ESC 27 EMIT ;
+: ESC[ ESC [CHAR] [ EMIT ;
+: M [CHAR] m emit ;
+
+: CLEAR ESC 99 EMIT ;
+
+: RESET ESC[ 0 .  M ;
+: BOLD ESC[ 1 . M ;
+: FAINT ESC[ 2 . M ;
+: ITALIC ESC[ 3 . M ;
+: UNDERLINE ESC[ 4 . M ;
+
+
+0 CONSTANT BLACK
+1 CONSTANT RED
+2 CONSTANT GREEN
+3 CONSTANT YELLOW
+4 CONSTANT BLUE
+5 CONSTANT MAGENTA
+6 CONSTANT CYAN
+7 CONSTANT WHITE
+
+
+: FG ESC[ 30 + . M ;
+: BG ESC[ 40 + . M ;

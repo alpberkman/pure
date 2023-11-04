@@ -54,7 +54,7 @@ void m_word(VM *vm, char *word) {
     }
 
     if(addr == 0) {
-        printf("Error in m_word %s at %i\n", buf, addr);
+        printf("Error in m_word: word not found %s\n", buf);
         return;
     }
 
@@ -66,28 +66,22 @@ void m_number(VM *vm, cell num) {
     *((cell *) &(vm->ram[hp])) =  num;
     hp += CELL_SIZE;
 }
+/*
 void m_const(VM *vm, char *name, cell num) {
     m_header(vm, name, MASK_VIS);
     m_word(vm, "[CONSTANT]");
     *((cell *) &(vm->ram[hp])) = num;
     hp += CELL_SIZE;
 }
+*/
 void m_var(VM *vm, char *name) {
     m_header(vm, name, MASK_VIS);
-    m_word(vm, "[VARIABLE]");
+    m_number(vm, hp+CELL_SIZE*3);
+    m_word(vm, "EXIT");
     *((cell *) &(vm->ram[hp])) = 0;
     hp += CELL_SIZE;
-    //cell tmp = hp;
-    //*((cell *) &(vm->ram[hp])) = 0;
-    //m_alloc(vm, CELL_SIZE);
-    //m_const(vm, name, tmp);
 }
-void m_var2(VM *vm, char *name, cell num) {
-    cell tmp = hp;
-    *((cell *) &(vm->ram[hp])) = num;
-    m_alloc(vm, CELL_SIZE);
-    m_const(vm, name, tmp);
-}
+
 
 void ff_base_words(VM *vm) {
 
@@ -398,48 +392,6 @@ void ff_base_words(VM *vm) {
 
     HEADER(EXECUTE, MASK_VIS);
     OPCODES(op_call);
-
-    // Tags
-    cell tag_colon[] = {// Ignore next instruction
-        POP, CELL, ADD, PUSH,
-        RET,
-    };
-    cell tag_semicolon[] = {// Return
-        POP, DROP, RET,
-    };
-    cell tag_variable[] = {// Return the next address
-        POP, RET,
-    };
-    cell tag_constant[] = {// Return the number in next address
-        POP, LDC, RET,
-    };
-/*
-    cell tag_create[] = {
-        RET,
-    };
-    cell tag_does[] = {
-        RET,
-    };
-*/
-
-    HEADER([:], MASK_VIS);
-    OPCODES(tag_colon);
-
-    HEADER([;], MASK_VIS);
-    OPCODES(tag_semicolon);
-
-    HEADER([VARIABLE], MASK_VIS);
-    OPCODES(tag_variable);
-
-    HEADER([CONSTANT], MASK_VIS);
-    OPCODES(tag_constant);
-/*
-    HEADER([CREATE], MASK_VIS);
-    OPCODES(tag_create);
-
-    HEADER([DOES>], MASK_VIS);
-    OPCODES(tag_does);
-*/
 }
 
 void ff_high_words(VM *vm) {

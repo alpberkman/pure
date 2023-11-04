@@ -74,9 +74,15 @@ void interp(VM *vm) {
         (*((cell *) &(vm->ram[st_addr]))) = TTRUE;
         read();
         m_header(vm, (char *)buf, 0);
+        /*
         m_word(vm, "[:]");
         *((cell *) &(vm->ram[hp])) =  hp - CELL_SIZE;
         hp += CELL_SIZE;
+        */
+        update;
+
+    } else if(streq(buf, "IMMEDIATE")) {
+        vm->ram[lp + CELL_SIZE] |= MASK_IMM;
         update;
     } else if(streq(buf, "\'")) {
         read();
@@ -88,11 +94,11 @@ void interp(VM *vm) {
         read();
         m_var(vm, (char *)buf);
         update;
-    } else if(streq(buf, "CONSTANT")) {
+    } /* else if(streq(buf, "CONSTANT")) {
         read();
         m_const(vm, (char *)buf, vm->spu.ps[--vm->spu.psp]);
         update;
-    } else {
+    } */ else {
         (*((cell *) &(vm->ram[0]))) = LIT;
         (*((cell *) &(vm->ram[CELL_SIZE]))) = atoi((char *)buf);
         (*((cell *) &(vm->ram[CELL_SIZE*2]))) = HALT;
@@ -116,8 +122,9 @@ void compile(VM *vm) {
     }  else if(streq(buf, "\\")) {
         while(getchar() != '\n');
     } else if(streq(buf, ";")) {
-        m_word(vm, "[;]");
+        //m_word(vm, "[;]");
         vm->ram[lp + CELL_SIZE] |= MASK_VIS;
+        m_word(vm, "EXIT");
         (*((cell *) &(vm->ram[st_addr]))) = FFALSE;
         update;
     } else if(streq(buf, "[\']")) {
@@ -125,17 +132,31 @@ void compile(VM *vm) {
         cell addr = find(vm);
         m_number(vm, addr ? addr + CELL_SIZE + 1 + len : 0);
         update;
+    } else if(streq(buf, "::")) {
+        // Should use find in the correct address
+        read();
+        //cell addr = find(vm, POP-FROM-STACK @ );
+        //m_number(vm, addr ? addr + CELL_SIZE + 1 + len : 0);
+        // if IMMEDIATE run else do what makes sense
+
+        // basically ':' that doesn't start from last
+        // but a given address
+        // That way : : LAST :: ;
+        update;
     } else if(streq(buf, "POSTPONE")) {
         read();
         cell addr = find(vm);
         if(addr != 0) {
             flags = vm->ram[addr + CELL_SIZE];
-            if(flags & MASK_IMM)
-                m_word(vm, "[POSTPONEI]");
-            else
-                m_word(vm, "[POSTPONE]");
-            m_word(vm, (char *)buf);
+            if(flags & MASK_IMM) {
+                m_word(vm, (char *)buf);
+            } else {
+                m_number(vm, addr);
+                m_word(vm, "COMPILE,");
+            }
             update;
+        } else {
+            printf("POSTPONE couldn't find the word: %s\n", buf);
         }
     } else {
         m_number(vm, atoi((char *)buf));
