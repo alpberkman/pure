@@ -1,6 +1,9 @@
 
 #include "ff.h"
 
+void dump(VM *vm, char *rom);
+void load(VM *vm, char *rom);
+void carr(VM *vm, char *rom);
 
 void disasm(VM *vm, cell addr, cell begin, cell end);
 void list1(VM *vm);
