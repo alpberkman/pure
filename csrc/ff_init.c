@@ -385,13 +385,13 @@ void ff_base_words(VM *vm) {
     OPCODES(op_emit);
 
 
-    // Call
-    cell op_call[] = {
-        POP, DROP, PUSH, RET,
+    // Exe
+    cell op_exe[] = {
+        PUSH, RET,
     };
 
     HEADER(EXECUTE, MASK_VIS);
-    OPCODES(op_call);
+    OPCODES(op_exe);
 }
 
 void ff_high_words(VM *vm) {

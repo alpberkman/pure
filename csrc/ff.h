@@ -5,6 +5,10 @@
 
 
 #define MEM_SIZE (0x8000)
+int getchar(void);
+int putchar(int c);
+#define IO_KEY     (getchar())
+#define IO_EMIT(C) (putchar((C)))
 
 
 #define MASK_VIS (1<<7)
@@ -77,8 +81,8 @@ LDR, STRR,
 LDI, STRI,
 // IO
 KEY, EMIT,
-// Call
-CALL,
+// Exe
+EXE,
 // Final Enum
 FF,
 };
@@ -89,13 +93,15 @@ void exec(VM *vm, cell opcode);
 void tick(VM *vm);
 void run(VM *vm);
 
-#define PPOP(VM)        (VM)->spu.ps[--(VM)->spu.psp]
-#define PPUSH(VM, VAL)  (VM)->spu.ps[(VM)->spu.psp++] = (VAL)
-#define RPOP(VM)        (VM)->spu.rs[--(VM)->spu.rsp]
-#define RPUSH(VM, VAL)  (VM)->spu.rs[(VM)->spu.rsp++] = (VAL)
+#define PPOP(VM)    (VM)->spu.ps[--(VM)->spu.psp]
+#define PPUSH(VM)   (VM)->spu.ps[(VM)->spu.psp++]
+#define RPOP(VM)    (VM)->spu.rs[--(VM)->spu.rsp]
+#define RPUSH(VM)   (VM)->spu.rs[(VM)->spu.rsp++]
 
 #define CELL_VAL(VM, ADDR) (*((cell *) &((VM)->ram[(ADDR)])))
 #define BYTE_VAL(VM, ADDR) ((VM)->ram[(ADDR)])
+
+#define INCIP(VM) ((VM)->spu.ip += CELL_SIZE)
 
 void _nop(VM *vm);
 void _lit(VM *vm);
@@ -141,7 +147,7 @@ void _ldi(VM *vm);
 void _stri(VM *vm);
 void _key(VM *vm);
 void _emit(VM *vm);
-void _call(VM *vm);
+void _exe(VM *vm);
 
 #endif
 

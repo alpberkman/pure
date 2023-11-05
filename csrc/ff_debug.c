@@ -5,6 +5,44 @@
 #include <stdio.h>
 
 
+void dump(VM *vm, char *rom) {
+    FILE *fptr = fopen(rom, "w");
+    if(fptr == NULL) {
+        printf("[DUMP]: Can't open file\n");
+        return;
+    }
+
+    for(int i = 0; i < MEM_SIZE; ++i)
+        fputc(vm->ram[i], fptr);
+}
+void load(VM *vm, char *rom) {
+    FILE *fptr = fopen(rom, "r");
+    if(fptr == NULL) {
+        printf("[LOAD]: Can't open file\n");
+        return;
+    }
+
+    for(int i = 0; i < MEM_SIZE; ++i)
+        vm->ram[i] = fgetc(fptr);
+}
+void carr(VM *vm, char *rom) {
+    FILE *fptr = fopen(rom, "w");
+    if(fptr == NULL) {
+        printf("[CARR]: Can't open file\n");
+        return;
+    }
+
+    fprintf(fptr, "\n\n{");
+    for(int i = 0; i < MEM_SIZE; ++i) {
+        if(i%8 == 0) fprintf(fptr, "\n\t");
+        fprintf(fptr, "%03x, ", vm->ram[i]);
+    }
+    fprintf(fptr, "\n};\n\n");
+}
+
+
+
+
 extern cell hp;
 extern cell lp;
 
@@ -60,7 +98,7 @@ void disasm(VM *vm, cell addr, cell begin, cell end) {
             case STRI: printf("STRI"); break;
             case KEY: printf("KEY"); break;
             case EMIT: printf("EMIT"); break;
-            case CALL: printf("CALL"); break;
+            case EXE: printf("EXE"); break;
             default: {
                 cell f = addr;
                 while(*((cell *) &(vm->ram[begin])) < f)
