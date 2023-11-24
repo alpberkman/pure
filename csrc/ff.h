@@ -56,35 +56,35 @@ struct VM {
 };
 
 enum prim {
-NOP, LIT, HALT,
+    NOP, LIT, HALT,
 // Stack
-DUP, DROP, SWAP,
-PUSH, POP,
-PICK, RICK,
+    DUP, DROP, SWAP,
+    PUSH, POP,
+    PICK, RICK,
 // Controlflow
-JMP, JZ, RET,
+    JMP, JZ, RET,
 // Logic
-EQ, NEQ, GT, LT,
-AND, OR, XOR,
-SHR, SHL,
-TRU, FLS,
+    EQ, NEQ, GT, LT,
+    AND, OR, XOR,
+    SHR, SHL,
+    TRU, FLS,
 // Arithmetic
-ADD, SUB, MUL, DIV, MOD,
+    ADD, SUB, MUL, DIV, MOD,
 // Memory
-LDC, STRC,
-LDB, STRB,
-CELL, BYTE,
-MEM,
+    LDC, STRC,
+    LDB, STRB,
+    CELL, BYTE,
+    MEM,
 // Special
-LDP, STRP,
-LDR, STRR,
-LDI, STRI,
+    LDP, STRP,
+    LDR, STRR,
+    LDI, STRI,
 // IO
-KEY, EMIT,
+    KEY, EMIT,
 // Exe
-EXE,
+    EXE,
 // Final Enum
-FF,
+    FF,
 };
 
 
@@ -92,6 +92,7 @@ cell next(VM *vm);
 void exec(VM *vm, cell opcode);
 void tick(VM *vm);
 void run(VM *vm);
+void call(VM *vm, cell addr);
 
 #define PPOP(VM)    (VM)->spu.ps[--(VM)->spu.psp]
 #define PPUSH(VM)   (VM)->spu.ps[(VM)->spu.psp++]

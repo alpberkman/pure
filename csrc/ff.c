@@ -55,10 +55,7 @@ void exec(VM *vm, cell opcode) {
         case KEY: _key(vm); break;
         case EMIT: _emit(vm); break;
         case EXE: _exe(vm); break;
-        default:
-            RPUSH(vm) = vm->spu.ip;
-            vm->spu.ip = opcode;
-            break;
+        default: call(vm, opcode);
     }
 }
 void tick(VM *vm) {
@@ -68,6 +65,10 @@ void run(VM *vm) {
     vm->spu.p = ON;
     while(vm->spu.p == ON)
         tick(vm);
+}
+void call(VM *vm, cell addr) {
+    RPUSH(vm) = vm->spu.ip;
+    vm->spu.ip = addr;
 }
 
 void _nop(VM *vm) {
